@@ -1,0 +1,82 @@
+export type Theme = "system" | "light" | "dark";
+
+export type User = {
+  _id: string;
+  fullName: string;
+  email: string;
+  theme: Theme;
+  notificationPreferences: {
+    monthlyReport: boolean;
+    overdueTasks: boolean;
+    quietMode: boolean;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Priority = "low" | "medium" | "high";
+export type TaskStatus = "inbox" | "active" | "completed" | "archived";
+export type RecurringType = "none" | "daily" | "weekly" | "monthly";
+
+export type Task = {
+  _id: string;
+  userId: string;
+  title: string;
+  description: string;
+  dueDate: string | null;
+  priority: Priority;
+  status: TaskStatus;
+  recurring: boolean;
+  recurringType: RecurringType;
+  tags: string[];
+  cycleMonth: number;
+  cycleYear: number;
+  archived: boolean;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Note = {
+  _id: string;
+  userId: string;
+  title: string;
+  content: string;
+  tags: string[];
+  pinned: boolean;
+  archived: boolean;
+  cycleMonth: number;
+  cycleYear: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Project = {
+  _id: string;
+  userId: string;
+  title: string;
+  description: string;
+  status: "planning" | "active" | "paused" | "completed" | "archived";
+  progress: number;
+  cycleMonth: number;
+  cycleYear: number;
+  archived: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MonthlyReport = {
+  _id: string;
+  userId: string;
+  month: number;
+  year: number;
+  type: "automatic" | "manual";
+  completedTasks: number;
+  pendingTasks: number;
+  notesCreated: number;
+  projectsCompleted: number;
+  productivityScore: number;
+  summaryJson: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
