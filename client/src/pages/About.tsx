@@ -74,7 +74,7 @@ export default function About() {
               </a>
 
               <a
-                href="mailto:feedback@mono.app"
+                href="mailto:chessmanpk1@gmail.com"
                 className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] px-4 py-2 text-sm font-medium transition hover:bg-[var(--surface-soft)]"
               >
                 <Mail className="h-4 w-4" />
