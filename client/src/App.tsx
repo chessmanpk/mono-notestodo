@@ -14,6 +14,7 @@ import Register from "./pages/Register";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Tasks from "./pages/Tasks";
+import About from "./pages/About";
 
 export default function App() {
   const initAuth = useAuthStore((state) => state.initAuth);
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/notes" element={<Notes />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/about" element={<About />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>
