@@ -313,7 +313,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <MonthlyResetCountdown />
+      <MonthlyResetCountdown monthlyProgress={data.stats.monthlyProgress} />
 
       <div className="grid w-full max-w-full gap-3 overflow-hidden sm:grid-cols-2 xl:grid-cols-4">
         <StatsCard
