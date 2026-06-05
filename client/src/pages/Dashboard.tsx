@@ -83,16 +83,16 @@ function DashboardTaskRow({
           onSelect();
         }
       }}
-      className="group w-full cursor-pointer rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-4 text-left transition hover:-translate-y-0.5 hover:bg-[var(--surface-soft)]"
+      className="group w-full max-w-full cursor-pointer overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-4 text-left transition hover:-translate-y-0.5 hover:bg-[var(--surface-soft)]"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex min-w-0 items-start gap-3">
         <button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
             onToggle();
           }}
-          className="mt-0.5 rounded-full text-[var(--muted)] transition hover:text-[var(--text)]"
+          className="mt-0.5 shrink-0 rounded-full text-[var(--muted)] transition hover:text-[var(--text)]"
           aria-label={
             isCompleted ? "Mark task as pending" : "Mark task as completed"
           }
@@ -105,19 +105,21 @@ function DashboardTaskRow({
         </button>
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="truncate text-sm font-medium">{task.title}</p>
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <p className="min-w-0 flex-1 break-words text-sm font-medium">
+              {task.title}
+            </p>
 
-            <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--muted)]">
+            <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--muted)]">
               {section}
             </span>
           </div>
 
-          <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--muted)]">
+          <p className="mt-1 line-clamp-2 break-words text-xs leading-5 text-[var(--muted)]">
             {description || "No description added."}
           </p>
 
-          <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-[var(--muted)]">
+          <div className="mt-3 flex min-w-0 flex-wrap gap-2 text-[11px] text-[var(--muted)]">
             {priority && (
               <span className="rounded-full bg-[var(--surface-soft)] px-2 py-1">
                 {priority}
@@ -164,11 +166,11 @@ function DashboardPreviewCard({
   return (
     <section
       ref={previewRef}
-      className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5"
+      className="w-full max-w-full overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5"
     >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
+      <div className="flex min-w-0 items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <span className="rounded-full bg-[var(--text)] px-3 py-1 text-xs font-medium text-[var(--background)]">
               {selected.section}
             </span>
@@ -178,7 +180,7 @@ function DashboardPreviewCard({
             </span>
           </div>
 
-          <h2 className="mt-4 text-2xl font-semibold tracking-tight">
+          <h2 className="mt-4 max-w-full break-words text-2xl font-semibold tracking-tight">
             {selected.title}
           </h2>
         </div>
@@ -186,21 +188,21 @@ function DashboardPreviewCard({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-[var(--border)] p-2 text-[var(--muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text)]"
+          className="shrink-0 rounded-full border border-[var(--border)] p-2 text-[var(--muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text)]"
           aria-label="Close preview"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="mt-5 rounded-2xl bg-[var(--surface-soft)] p-4">
-        <p className="whitespace-pre-wrap text-sm leading-7 text-[var(--muted)]">
+      <div className="mt-5 max-w-full overflow-hidden rounded-2xl bg-[var(--surface-soft)] p-4">
+        <p className="max-w-full whitespace-pre-wrap break-words text-sm leading-7 text-[var(--muted)]">
           {body}
         </p>
       </div>
 
       {isTask && (
-        <div className="mt-4 flex flex-wrap gap-2 text-xs text-[var(--muted)]">
+        <div className="mt-4 flex min-w-0 flex-wrap gap-2 text-xs text-[var(--muted)]">
           {status && (
             <span className="rounded-full border border-[var(--border)] px-3 py-1">
               Status: {status}
@@ -290,18 +292,18 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-        <div>
+    <div className="w-full max-w-full overflow-hidden space-y-6">
+      <div className="flex min-w-0 flex-col justify-between gap-4 lg:flex-row lg:items-end">
+        <div className="min-w-0">
           <p className="text-sm text-[var(--muted)]">
             Month {data.stats.month}, {data.stats.year}
           </p>
 
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+          <h1 className="mt-1 break-words text-3xl font-semibold tracking-tight">
             Fresh workspace
           </h1>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+          <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-[var(--muted)]">
             Focus on today. Mono will archive the noise when the month ends.
           </p>
         </div>
@@ -313,7 +315,7 @@ export default function Dashboard() {
 
       <MonthlyResetCountdown />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid w-full max-w-full gap-3 overflow-hidden sm:grid-cols-2 xl:grid-cols-4">
         <StatsCard
           label="Monthly progress"
           value={`${data.stats.monthlyProgress}%`}
@@ -345,8 +347,8 @@ export default function Dashboard() {
         previewRef={previewRef}
       />
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        <section className="space-y-3">
+      <div className="grid w-full max-w-full gap-6 overflow-hidden xl:grid-cols-2">
+        <section className="min-w-0 space-y-3">
           <h2 className="text-lg font-semibold tracking-tight">Today</h2>
 
           {data.todayTasks.length === 0 ? (
@@ -374,7 +376,7 @@ export default function Dashboard() {
           )}
         </section>
 
-        <section className="space-y-3">
+        <section className="min-w-0 space-y-3">
           <h2 className="text-lg font-semibold tracking-tight">Overdue</h2>
 
           {data.overdueTasks.length === 0 ? (
@@ -403,13 +405,13 @@ export default function Dashboard() {
         </section>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold tracking-tight">
+      <div className="grid w-full max-w-full gap-6 overflow-hidden xl:grid-cols-2">
+        <section className="min-w-0 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <div className="flex min-w-0 items-center justify-between gap-3">
+            <h2 className="min-w-0 break-words text-lg font-semibold tracking-tight">
               Recent notes
             </h2>
-            <FileText className="h-4 w-4 text-[var(--muted)]" />
+            <FileText className="h-4 w-4 shrink-0 text-[var(--muted)]" />
           </div>
 
           <div className="mt-4 space-y-3">
@@ -428,11 +430,13 @@ export default function Dashboard() {
                       section: "Recent note",
                     })
                   }
-                  className="w-full rounded-2xl border border-[var(--border)] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[var(--surface-soft)]"
+                  className="w-full max-w-full overflow-hidden rounded-2xl border border-[var(--border)] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[var(--surface-soft)]"
                 >
-                  <p className="text-sm font-medium">{note.title}</p>
+                  <p className="break-words text-sm font-medium">
+                    {note.title}
+                  </p>
 
-                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--muted)]">
+                  <p className="mt-1 line-clamp-2 break-words text-xs leading-5 text-[var(--muted)]">
                     {readStringField(note, "content") || "Empty note"}
                   </p>
 
@@ -445,8 +449,8 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5">
-          <h2 className="text-lg font-semibold tracking-tight">
+        <section className="min-w-0 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <h2 className="break-words text-lg font-semibold tracking-tight">
             Project progress
           </h2>
 
@@ -455,10 +459,12 @@ export default function Dashboard() {
               <p className="text-sm text-[var(--muted)]">No active projects.</p>
             ) : (
               data.projects.map((project) => (
-                <div key={project._id}>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span>{project.title}</span>
-                    <span className="text-[var(--muted)]">
+                <div key={project._id} className="min-w-0">
+                  <div className="mb-2 flex min-w-0 justify-between gap-3 text-sm">
+                    <span className="min-w-0 break-words">
+                      {project.title}
+                    </span>
+                    <span className="shrink-0 text-[var(--muted)]">
                       {project.progress}%
                     </span>
                   </div>
