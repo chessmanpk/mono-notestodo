@@ -1,6 +1,7 @@
 import { CalendarDays, CheckCircle2, FolderKanban, ListTodo } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { MonthlyResetCountdown } from "../components/dashboard/MonthlyResetCountdown";
 import { EmptyState } from "../components/shared/EmptyState";
 import { LoadingSkeleton } from "../components/shared/LoadingSkeleton";
 import { QuickAdd } from "../components/shared/QuickAdd";
@@ -40,7 +41,7 @@ export default function Dashboard() {
         </div>
         <div className="w-full max-w-lg"><QuickAdd onCreated={load} /></div>
       </div>
-
+      <MonthlyResetCountdown /> {/* Monthly Reset */}
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatsCard label="Monthly progress" value={`${data.stats.monthlyProgress}%`} icon={<CalendarDays className="h-4 w-4" />} />
         <StatsCard label="Completed" value={data.stats.completedTasks} icon={<CheckCircle2 className="h-4 w-4" />} />
