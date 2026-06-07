@@ -5,6 +5,7 @@ import {
   Home,
   Info,
   ListTodo,
+  MessageSquare,
   Settings,
   X,
 } from "lucide-react";
@@ -18,6 +19,7 @@ const nav = [
   { label: "Notes", path: "/notes", icon: FileText },
   { label: "Projects", path: "/projects", icon: FolderKanban },
   { label: "Reports", path: "/reports", icon: BarChart3 },
+  { label: "Feedback", path: "/feedback", icon: MessageSquare },
   { label: "About", path: "/about", icon: Info },
   { label: "Settings", path: "/settings", icon: Settings },
 ];

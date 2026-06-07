@@ -6,6 +6,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import feedbackRoutes from "./routes/feedback.routes.js";
 import noteRoutes from "./routes/note.routes.js";
 import projectRoutes from "./routes/project.routes.js";
 import reportRoutes from "./routes/report.routes.js";
@@ -36,6 +37,7 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/feedback", feedbackRoutes);
 app.use("/api/system", systemRoutes);
 
 app.use(notFound);
