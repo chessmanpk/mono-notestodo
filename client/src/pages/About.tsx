@@ -1,10 +1,12 @@
+import { Link } from "react-router-dom";
+
 import {
   ArrowUpRight,
   CheckCircle2,
   FileText,
   Github,
   Layers3,
-  Mail,
+  MessageSquare,
   RefreshCcw,
   Sparkles,
 } from "lucide-react";
@@ -73,13 +75,13 @@ export default function About() {
                 <ArrowUpRight className="h-4 w-4" />
               </a>
 
-              <a
-                href="mailto:chessmanpk1@gmail.com"
+              <Link
+                to="/feedback"
                 className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] px-4 py-2 text-sm font-medium transition hover:bg-[var(--surface-soft)]"
-              >
-                <Mail className="h-4 w-4" />
+                >
+                <MessageSquare className="h-4 w-4" />
                 Share feedback
-              </a>
+              </Link>
             </div>
           </div>
 
