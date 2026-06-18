@@ -5,6 +5,7 @@ import {
   Home,
   Info,
   ListTodo,
+  MessageSquare,
   Settings,
   ShieldCheck,
   X,
@@ -28,7 +29,8 @@ const nav: NavItem[] = [
   { label: "Notes", path: "/notes", icon: FileText },
   { label: "Projects", path: "/projects", icon: FolderKanban },
   { label: "Reports", path: "/reports", icon: BarChart3 },
-  { label: "Admin", path: "/admin/users", icon: ShieldCheck, allowedRoles: ["admin"] },
+  { label: "Admin Users", path: "/admin/users", icon: ShieldCheck, allowedRoles: ["admin"] },
+  { label: "Feedback Inbox", path: "/admin/feedback", icon: MessageSquare, allowedRoles: ["admin"] },
   { label: "About", path: "/about", icon: Info },
   { label: "Settings", path: "/settings", icon: Settings },
 ];

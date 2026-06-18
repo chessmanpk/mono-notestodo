@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 
+export const FEEDBACK_TYPES = ["bug", "feature", "general"] as const;
+export type FeedbackType = (typeof FEEDBACK_TYPES)[number];
+
+export const FEEDBACK_STATUSES = ["open", "reviewed", "closed"] as const;
+export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number];
+
 const feedbackSchema = new mongoose.Schema(
   {
     userId: {
@@ -17,7 +23,7 @@ const feedbackSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["bug", "feature", "general"],
+      enum: FEEDBACK_TYPES,
       default: "general",
       index: true,
     },
@@ -35,9 +41,24 @@ const feedbackSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["open", "reviewed", "closed"],
+      enum: FEEDBACK_STATUSES,
       default: "open",
       index: true,
+    },
+    adminNote: {
+      type: String,
+      trim: true,
+      maxlength: 1000,
+      default: "",
+    },
+    reviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    reviewedAt: {
+      type: Date,
+      default: null,
     },
   },
   { timestamps: true }

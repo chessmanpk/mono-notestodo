@@ -8,6 +8,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { getErrorMessage } from "../services/api";
+import { cn } from "../utils/cn";
 import { feedbackService } from "../services/feedback.service";
 import type {
   FeedbackItem,
@@ -56,6 +57,18 @@ function statusLabel(status: FeedbackItem["status"]) {
   if (status === "reviewed") return "Reviewed";
   if (status === "closed") return "Closed";
   return "Open";
+}
+
+function statusBadgeClass(status: FeedbackItem["status"]) {
+  if (status === "reviewed") {
+    return "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300";
+  }
+
+  if (status === "closed") {
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
+  }
+
+  return "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300";
 }
 
 export default function Feedback() {
@@ -153,9 +166,9 @@ export default function Feedback() {
             <div className="mt-8 rounded-3xl border border-[var(--background)]/20 p-4">
               <p className="text-sm font-medium">What happens next?</p>
               <p className="mt-2 text-xs leading-6 opacity-75">
-                For now, you can submit feedback and see your own submissions.
-                In the next phase, admin accounts will be able to review all
-                feedback and update its status.
+                You can submit feedback and see your own submissions here.
+                Admins can review each item, update its status, and send a
+                reply that appears in your submission history.
               </p>
             </div>
           </div>
@@ -301,7 +314,12 @@ export default function Feedback() {
                         {item.type}
                       </span>
 
-                      <span className="rounded-full border border-[var(--border)] px-3 py-1 text-xs text-[var(--muted)]">
+                      <span
+                        className={cn(
+                          "rounded-full border px-3 py-1 text-xs font-medium",
+                          statusBadgeClass(item.status)
+                        )}
+                      >
                         {statusLabel(item.status)}
                       </span>
                     </div>
@@ -313,6 +331,17 @@ export default function Feedback() {
                     <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--muted)]">
                       {item.message}
                     </p>
+
+                    {item.adminNote && (
+                      <div className="mt-4 rounded-2xl border border-sky-500/20 bg-sky-500/10 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
+                          Admin reply
+                        </p>
+                        <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--text)]">
+                          {item.adminNote}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <p className="shrink-0 text-xs text-[var(--muted)]">

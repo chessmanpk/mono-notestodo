@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import Tasks from "./pages/Tasks";
 import About from "./pages/About";
 import Feedback from "./pages/Feedback";
+import AdminFeedback from "./pages/AdminFeedback";
 import AdminUsers from "./pages/AdminUsers";
 
 export default function App() {
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/feedback" element={<Feedback />} />
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/feedback" element={<AdminFeedback />} />
             </Route>
             <Route path="/about" element={<About />} />
             <Route path="/settings" element={<Settings />} />
