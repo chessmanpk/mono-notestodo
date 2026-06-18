@@ -1,5 +1,5 @@
 import { api } from "./api";
-import type { Theme, User } from "../types";
+import type { Theme, User, UserRole } from "../types";
 
 export const authService = {
   async register(data: { fullName: string; email: string; password: string }) {
@@ -37,6 +37,16 @@ export const authService = {
     notificationPreferences?: User["notificationPreferences"];
   }) {
     const res = await api.patch<{ user: User }>("/auth/profile", data);
+    return res.data.user;
+  },
+
+  async listUsers() {
+    const res = await api.get<{ users: User[] }>("/auth/users");
+    return res.data.users;
+  },
+
+  async updateUserRole(userId: string, role: UserRole) {
+    const res = await api.patch<{ user: User }>(`/auth/users/${userId}/role`, { role });
     return res.data.user;
   },
 

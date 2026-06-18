@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import User from "../models/User.js";
+import User, { USER_ROLES, type UserRole } from "../models/User.js";
 import Task from "../models/Task.js";
 import Note from "../models/Note.js";
 import Project from "../models/Project.js";
@@ -18,7 +18,13 @@ function cookieOptions(rememberMe = false) {
 }
 
 function safeUser(user: any) {
-  return user.toJSON ? user.toJSON() : user;
+  const serialized = user?.toJSON ? user.toJSON() : user;
+  if (serialized && !serialized.role) serialized.role = "user";
+  return serialized;
+}
+
+function isUserRole(role: unknown): role is UserRole {
+  return USER_ROLES.includes(role as UserRole);
 }
 
 export async function register(req: Request, res: Response) {
@@ -37,7 +43,7 @@ export async function register(req: Request, res: Response) {
 
   const passwordHash = await bcrypt.hash(password, 12);
   const user = await User.create({ fullName, email, passwordHash });
-  const token = signAuthToken({ id: String(user._id), email: user.email }, true);
+  const token = signAuthToken({ id: String(user._id), email: user.email, role: user.role }, true);
 
   res.cookie("token", token, cookieOptions(true));
   res.status(201).json({ user: safeUser(user) });
@@ -56,7 +62,7 @@ export async function login(req: Request, res: Response) {
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) return res.status(401).json({ message: "Invalid email or password" });
 
-  const token = signAuthToken({ id: String(user._id), email: user.email }, Boolean(rememberMe));
+  const token = signAuthToken({ id: String(user._id), email: user.email, role: user.role }, Boolean(rememberMe));
   res.cookie("token", token, cookieOptions(Boolean(rememberMe)));
   res.json({ user: safeUser(user) });
 }
@@ -74,6 +80,44 @@ export async function me(req: Request, res: Response) {
   const user = await User.findById(req.user!.id);
   if (!user) return res.status(404).json({ message: "User not found" });
   res.json({ user: safeUser(user) });
+}
+
+export async function listUsers(_req: Request, res: Response) {
+  const users = await User.find()
+    .select("_id fullName email role createdAt updatedAt")
+    .sort({ createdAt: -1 });
+
+  res.json({ users: users.map(safeUser) });
+}
+
+export async function updateUserRole(req: Request, res: Response) {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!isUserRole(role)) {
+    return res.status(400).json({ message: "Role must be admin, manager, or user" });
+  }
+
+  const targetUser = await User.findById(id);
+  if (!targetUser) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  if (String(targetUser._id) === req.user!.id && role !== "admin") {
+    return res.status(400).json({ message: "You cannot remove your own Admin access" });
+  }
+
+  if (targetUser.role === "admin" && role !== "admin") {
+    const adminCount = await User.countDocuments({ role: "admin" });
+    if (adminCount <= 1) {
+      return res.status(400).json({ message: "At least one Admin account is required" });
+    }
+  }
+
+  targetUser.role = role;
+  await targetUser.save();
+
+  res.json({ user: safeUser(targetUser) });
 }
 
 export async function forgotPassword(req: Request, res: Response) {

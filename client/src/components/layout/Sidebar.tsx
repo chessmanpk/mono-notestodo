@@ -6,18 +6,29 @@ import {
   Info,
   ListTodo,
   Settings,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useAuthStore } from "../../store/auth.store";
+import type { UserRole } from "../../types";
 import { cn } from "../../utils/cn";
 import { Button } from "../ui/Button";
 
-const nav = [
+type NavItem = {
+  label: string;
+  path: string;
+  icon: typeof Home;
+  allowedRoles?: UserRole[];
+};
+
+const nav: NavItem[] = [
   { label: "Dashboard", path: "/dashboard", icon: Home },
   { label: "Tasks", path: "/tasks", icon: ListTodo },
   { label: "Notes", path: "/notes", icon: FileText },
   { label: "Projects", path: "/projects", icon: FolderKanban },
   { label: "Reports", path: "/reports", icon: BarChart3 },
+  { label: "Admin", path: "/admin/users", icon: ShieldCheck, allowedRoles: ["admin"] },
   { label: "About", path: "/about", icon: Info },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
@@ -29,6 +40,9 @@ export function Sidebar({
   open: boolean;
   onClose: () => void;
 }) {
+  const user = useAuthStore((state) => state.user);
+  const visibleNav = nav.filter((item) => !item.allowedRoles || (user && item.allowedRoles.includes(user.role)));
+
   return (
     <>
       <div
@@ -63,7 +77,7 @@ export function Sidebar({
         </div>
 
         <nav className="space-y-1">
-          {nav.map((item) => {
+          {visibleNav.map((item) => {
             const Icon = item.icon;
 
             return (

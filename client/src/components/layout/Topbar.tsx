@@ -6,6 +6,11 @@ import { Button } from "../ui/Button";
 import { CommandPalette } from "../shared/CommandPalette";
 import { ThemeToggle } from "../shared/ThemeToggle";
 
+function roleLabel(role?: string) {
+  if (!role) return "User";
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
 export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
@@ -24,7 +29,14 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             <Menu className="h-4 w-4" />
           </Button>
           <div>
-            <p className="text-sm font-medium">{user?.fullName || "Workspace"}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-sm font-medium">{user?.fullName || "Workspace"}</p>
+              {user?.role && (
+                <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                  {roleLabel(user.role)}
+                </span>
+              )}
+            </div>
             <p className="hidden text-xs text-[var(--muted)] sm:block">A quiet workspace for people who do many things.</p>
           </div>
         </div>

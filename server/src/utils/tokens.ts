@@ -1,8 +1,9 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import type { UserRole } from "../models/User.js";
 import { requireEnv } from "./env.js";
 
-export function signAuthToken(payload: { id: string; email: string }, rememberMe = false) {
+export function signAuthToken(payload: { id: string; email: string; role?: UserRole }, rememberMe = false) {
   return jwt.sign(payload, requireEnv("JWT_SECRET"), {
     expiresIn: rememberMe ? "30d" : "1d",
   });

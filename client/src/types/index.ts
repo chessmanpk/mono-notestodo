@@ -1,9 +1,11 @@
 export type Theme = "system" | "light" | "dark";
+export type UserRole = "admin" | "manager" | "user";
 
 export type User = {
   _id: string;
   fullName: string;
   email: string;
+  role: UserRole;
   theme: Theme;
   notificationPreferences: {
     monthlyReport: boolean;

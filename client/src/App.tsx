@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import Tasks from "./pages/Tasks";
 import About from "./pages/About";
 import Feedback from "./pages/Feedback";
+import AdminUsers from "./pages/AdminUsers";
 
 export default function App() {
   const initAuth = useAuthStore((state) => state.initAuth);
@@ -40,6 +41,9 @@ export default function App() {
             <Route path="/projects" element={<Projects />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/feedback" element={<Feedback />} />
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route path="/admin/users" element={<AdminUsers />} />
+            </Route>
             <Route path="/about" element={<About />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
