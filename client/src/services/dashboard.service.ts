@@ -1,11 +1,12 @@
 import { api } from "./api";
-import type { MonthlyReport, Note, Project, Task } from "../types";
+import type { Announcement, MonthlyReport, Note, Project, Task } from "../types";
 
 export type DashboardData = {
   todayTasks: Task[];
   overdueTasks: Task[];
   recentNotes: Note[];
   projects: Project[];
+  announcements: Announcement[];
   latestReport: MonthlyReport | null;
   stats: {
     month: number;

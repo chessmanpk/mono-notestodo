@@ -16,6 +16,39 @@ export type User = {
   updatedAt: string;
 };
 
+
+export type AnnouncementTone = "info" | "success" | "warning";
+
+export type AnnouncementAuthor = {
+  _id: string;
+  fullName: string;
+  email: string;
+  role: UserRole;
+};
+
+export type Announcement = {
+  _id: string;
+  title: string;
+  message: string;
+  tone: AnnouncementTone;
+  active: boolean;
+  createdBy: string | AnnouncementAuthor;
+  updatedBy: string | AnnouncementAuthor | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateAnnouncementInput = {
+  title: string;
+  message: string;
+  tone: AnnouncementTone;
+  active?: boolean;
+};
+
+export type UpdateAnnouncementInput = Partial<CreateAnnouncementInput> & {
+  active?: boolean;
+};
+
 export type Priority = "low" | "medium" | "high";
 export type TaskStatus = "inbox" | "active" | "completed" | "archived";
 export type RecurringType = "none" | "daily" | "weekly" | "monthly";

@@ -3,6 +3,7 @@ import Task from "../models/Task.js";
 import Note from "../models/Note.js";
 import Project from "../models/Project.js";
 import MonthlyReport from "../models/MonthlyReport.js";
+import Announcement from "../models/Announcement.js";
 import { getMonthInfo } from "../utils/dateUtils.js";
 
 export async function getDashboard(req: Request, res: Response) {
@@ -12,7 +13,9 @@ export async function getDashboard(req: Request, res: Response) {
   const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   const current = getMonthInfo();
 
-  const [todayTasks, overdueTasks, monthTasks, recentNotes, projects, latestReport] = await Promise.all([
+  const canManageAnnouncements = req.user!.role === "admin" || req.user!.role === "manager";
+
+  const [todayTasks, overdueTasks, monthTasks, recentNotes, projects, latestReport, announcements] = await Promise.all([
     Task.find({ userId, archived: false, dueDate: { $gte: todayStart, $lt: todayEnd }, status: { $ne: "completed" } })
       .sort({ dueDate: 1 })
       .limit(6)
@@ -25,6 +28,12 @@ export async function getDashboard(req: Request, res: Response) {
     Note.find({ userId, archived: false }).sort({ pinned: -1, updatedAt: -1 }).limit(5).lean(),
     Project.find({ userId, archived: false }).sort({ updatedAt: -1 }).limit(5).lean(),
     MonthlyReport.findOne({ userId }).sort({ year: -1, month: -1 }).lean(),
+    Announcement.find(canManageAnnouncements ? {} : { active: true })
+      .sort({ active: -1, createdAt: -1 })
+      .limit(8)
+      .populate("createdBy", "fullName email role")
+      .populate("updatedBy", "fullName email role")
+      .lean(),
   ]);
 
   const completed = monthTasks.filter((task) => task.status === "completed").length;
@@ -36,6 +45,7 @@ export async function getDashboard(req: Request, res: Response) {
     overdueTasks,
     recentNotes,
     projects,
+    announcements,
     latestReport,
     stats: {
       month: current.month,

@@ -1,0 +1,719 @@
+diff --git a/client/src/components/dashboard/AnnouncementBoard.tsx b/client/src/components/dashboard/AnnouncementBoard.tsx
+new file mode 100644
+index 0000000..8dfc949
+--- /dev/null
++++ b/client/src/components/dashboard/AnnouncementBoard.tsx
+@@ -0,0 +1,305 @@
++import {
++  Megaphone,
++  Plus,
++  Send,
++  Trash2,
++  Eye,
++  EyeOff,
++} from "lucide-react";
++import { useState, type FormEvent } from "react";
++import { toast } from "sonner";
++import { getErrorMessage } from "../../services/api";
++import { announcementService } from "../../services/announcement.service";
++import { useAuthStore } from "../../store/auth.store";
++import type { Announcement, AnnouncementTone } from "../../types";
++import { cn } from "../../utils/cn";
++import { Button } from "../ui/Button";
++import { Input } from "../ui/Input";
++import { Textarea } from "../ui/Textarea";
++
++const toneOptions: { value: AnnouncementTone; label: string }[] = [
++  { value: "info", label: "Update" },
++  { value: "success", label: "Good news" },
++  { value: "warning", label: "Important" },
++];
++
++function toneClass(tone: AnnouncementTone) {
++  if (tone === "success") {
++    return "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
++  }
++
++  if (tone === "warning") {
++    return "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300";
++  }
++
++  return "border-sky-500/25 bg-sky-500/10 text-sky-700 dark:text-sky-300";
++}
++
++function toneLabel(tone: AnnouncementTone) {
++  return toneOptions.find((option) => option.value === tone)?.label || "Update";
++}
++
++function formatDate(value: string) {
++  const date = new Date(value);
++
++  if (Number.isNaN(date.getTime())) return "";
++
++  return date.toLocaleDateString("en-US", {
++    month: "short",
++    day: "numeric",
++    year: "numeric",
++  });
++}
++
++function authorName(author: Announcement["createdBy"]) {
++  if (typeof author === "object" && author?.fullName) return author.fullName;
++  return "Mono team";
++}
++
++export function AnnouncementBoard({
++  announcements,
++  onChanged,
++}: {
++  announcements: Announcement[];
++  onChanged: () => Promise<void> | void;
++}) {
++  const user = useAuthStore((state) => state.user);
++  const canManage = user?.role === "admin" || user?.role === "manager";
++  const [showForm, setShowForm] = useState(false);
++  const [title, setTitle] = useState("");
++  const [message, setMessage] = useState("");
++  const [tone, setTone] = useState<AnnouncementTone>("info");
++  const [submitting, setSubmitting] = useState(false);
++  const [updatingId, setUpdatingId] = useState<string | null>(null);
++
++  async function refresh() {
++    await onChanged();
++  }
++
++  async function createAnnouncement(event: FormEvent<HTMLFormElement>) {
++    event.preventDefault();
++
++    if (!title.trim() || !message.trim()) {
++      toast.error("Please add a title and message");
++      return;
++    }
++
++    try {
++      setSubmitting(true);
++      await announcementService.create({
++        title,
++        message,
++        tone,
++        active: true,
++      });
++      toast.success("Announcement published");
++      setTitle("");
++      setMessage("");
++      setTone("info");
++      setShowForm(false);
++      await refresh();
++    } catch (error) {
++      toast.error(getErrorMessage(error));
++    } finally {
++      setSubmitting(false);
++    }
++  }
++
++  async function toggleAnnouncement(announcement: Announcement) {
++    try {
++      setUpdatingId(announcement._id);
++      await announcementService.update(announcement._id, {
++        active: !announcement.active,
++      });
++      toast.success(
++        announcement.active ? "Announcement hidden" : "Announcement restored"
++      );
++      await refresh();
++    } catch (error) {
++      toast.error(getErrorMessage(error));
++    } finally {
++      setUpdatingId(null);
++    }
++  }
++
++  async function deleteAnnouncement(announcementId: string) {
++    const confirmed = window.confirm(
++      "Delete this announcement? This cannot be undone."
++    );
++
++    if (!confirmed) return;
++
++    try {
++      setUpdatingId(announcementId);
++      await announcementService.remove(announcementId);
++      toast.success("Announcement deleted");
++      await refresh();
++    } catch (error) {
++      toast.error(getErrorMessage(error));
++    } finally {
++      setUpdatingId(null);
++    }
++  }
++
++  return (
++    <section className="w-full max-w-full overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5">
++      <div className="flex min-w-0 flex-col justify-between gap-4 sm:flex-row sm:items-start">
++        <div className="min-w-0">
++          <div className="flex min-w-0 items-center gap-2">
++            <span className="rounded-2xl bg-[var(--surface-soft)] p-2 text-[var(--muted)]">
++              <Megaphone className="h-4 w-4" />
++            </span>
++            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
++              Announcements
++            </p>
++          </div>
++
++          <h2 className="mt-3 break-words text-xl font-semibold tracking-tight">
++            Mono updates board
++          </h2>
++          <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--muted)]">
++            Product updates, bug fixes, and important notes from the Mono team.
++          </p>
++        </div>
++
++        {canManage && (
++          <Button
++            type="button"
++            variant={showForm ? "secondary" : "primary"}
++            size="sm"
++            onClick={() => setShowForm((value) => !value)}
++            className="shrink-0"
++          >
++            <Plus className="h-4 w-4" />
++            {showForm ? "Close" : "New update"}
++          </Button>
++        )}
++      </div>
++
++      {canManage && showForm && (
++        <form
++          onSubmit={createAnnouncement}
++          className="mt-5 rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4"
++        >
++          <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
++            <Input
++              value={title}
++              onChange={(event) => setTitle(event.target.value)}
++              placeholder="Announcement title"
++              maxLength={120}
++            />
++
++            <select
++              value={tone}
++              onChange={(event) => setTone(event.target.value as AnnouncementTone)}
++              className="h-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--text)]"
++            >
++              {toneOptions.map((option) => (
++                <option key={option.value} value={option.value}>
++                  {option.label}
++                </option>
++              ))}
++            </select>
++          </div>
++
++          <Textarea
++            value={message}
++            onChange={(event) => setMessage(event.target.value)}
++            placeholder="Write a short update that every user should see..."
++            maxLength={900}
++            className="mt-3 min-h-24"
++          />
++
++          <div className="mt-3 flex justify-end">
++            <Button type="submit" disabled={submitting}>
++              <Send className="h-4 w-4" />
++              {submitting ? "Publishing..." : "Publish"}
++            </Button>
++          </div>
++        </form>
++      )}
++
++      <div className="mt-5 space-y-3">
++        {announcements.length === 0 ? (
++          <div className="rounded-3xl border border-dashed border-[var(--border)] bg-[var(--background)] p-5 text-sm text-[var(--muted)]">
++            No announcements yet.
++          </div>
++        ) : (
++          announcements.map((announcement) => (
++            <article
++              key={announcement._id}
++              className={cn(
++                "rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4",
++                !announcement.active && "opacity-60"
++              )}
++            >
++              <div className="flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-start">
++                <div className="min-w-0 flex-1">
++                  <div className="flex min-w-0 flex-wrap items-center gap-2">
++                    <span
++                      className={cn(
++                        "rounded-full border px-3 py-1 text-xs font-medium",
++                        toneClass(announcement.tone)
++                      )}
++                    >
++                      {toneLabel(announcement.tone)}
++                    </span>
++
++                    {!announcement.active && canManage && (
++                      <span className="rounded-full border border-[var(--border)] px-3 py-1 text-xs text-[var(--muted)]">
++                        Hidden
++                      </span>
++                    )}
++                  </div>
++
++                  <h3 className="mt-3 break-words text-base font-semibold tracking-tight">
++                    {announcement.title}
++                  </h3>
++
++                  <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--muted)]">
++                    {announcement.message}
++                  </p>
++
++                  <p className="mt-3 text-xs text-[var(--muted)]">
++                    Posted by {authorName(announcement.createdBy)} on{" "}
++                    {formatDate(announcement.createdAt)}
++                  </p>
++                </div>
++
++                {canManage && (
++                  <div className="flex shrink-0 flex-wrap gap-2">
++                    <Button
++                      type="button"
++                      variant="secondary"
++                      size="sm"
++                      disabled={updatingId === announcement._id}
++                      onClick={() => toggleAnnouncement(announcement)}
++                    >
++                      {announcement.active ? (
++                        <EyeOff className="h-4 w-4" />
++                      ) : (
++                        <Eye className="h-4 w-4" />
++                      )}
++                      {announcement.active ? "Hide" : "Show"}
++                    </Button>
++
++                    <Button
++                      type="button"
++                      variant="danger"
++                      size="sm"
++                      disabled={updatingId === announcement._id}
++                      onClick={() => deleteAnnouncement(announcement._id)}
++                    >
++                      <Trash2 className="h-4 w-4" />
++                      Delete
++                    </Button>
++                  </div>
++                )}
++              </div>
++            </article>
++          ))
++        )}
++      </div>
++    </section>
++  );
++}
+diff --git a/client/src/pages/Dashboard.tsx b/client/src/pages/Dashboard.tsx
+index 45efec8..c9c78c9 100644
+--- a/client/src/pages/Dashboard.tsx
++++ b/client/src/pages/Dashboard.tsx
+@@ -9,6 +9,7 @@ import {
+ } from "lucide-react";
+ import { useEffect, useRef, useState, type RefObject } from "react";
+ import { toast } from "sonner";
++import { AnnouncementBoard } from "../components/dashboard/AnnouncementBoard";
+ import { MonthlyResetCountdown } from "../components/dashboard/MonthlyResetCountdown";
+ import { EmptyState } from "../components/shared/EmptyState";
+ import { LoadingSkeleton } from "../components/shared/LoadingSkeleton";
+@@ -313,6 +314,8 @@ export default function Dashboard() {
+         </div>
+       </div>
+ 
++      <AnnouncementBoard announcements={data.announcements} onChanged={load} />
++
+       <MonthlyResetCountdown monthlyProgress={data.stats.monthlyProgress} />
+ 
+       <div className="grid w-full max-w-full gap-3 overflow-hidden sm:grid-cols-2 xl:grid-cols-4">
+diff --git a/client/src/services/announcement.service.ts b/client/src/services/announcement.service.ts
+new file mode 100644
+index 0000000..374ecb0
+--- /dev/null
++++ b/client/src/services/announcement.service.ts
+@@ -0,0 +1,38 @@
++import { api } from "./api";
++import type {
++  Announcement,
++  CreateAnnouncementInput,
++  UpdateAnnouncementInput,
++} from "../types";
++
++export const announcementService = {
++  async getAll() {
++    const response = await api.get<{ announcements: Announcement[] }>(
++      "/announcements"
++    );
++
++    return response.data.announcements;
++  },
++
++  async create(input: CreateAnnouncementInput) {
++    const response = await api.post<{ announcement: Announcement }>(
++      "/announcements",
++      input
++    );
++
++    return response.data.announcement;
++  },
++
++  async update(announcementId: string, input: UpdateAnnouncementInput) {
++    const response = await api.patch<{ announcement: Announcement }>(
++      `/announcements/${announcementId}`,
++      input
++    );
++
++    return response.data.announcement;
++  },
++
++  async remove(announcementId: string) {
++    await api.delete(`/announcements/${announcementId}`);
++  },
++};
+diff --git a/client/src/services/dashboard.service.ts b/client/src/services/dashboard.service.ts
+index 49db208..90ec897 100644
+--- a/client/src/services/dashboard.service.ts
++++ b/client/src/services/dashboard.service.ts
+@@ -1,11 +1,12 @@
+ import { api } from "./api";
+-import type { MonthlyReport, Note, Project, Task } from "../types";
++import type { Announcement, MonthlyReport, Note, Project, Task } from "../types";
+ 
+ export type DashboardData = {
+   todayTasks: Task[];
+   overdueTasks: Task[];
+   recentNotes: Note[];
+   projects: Project[];
++  announcements: Announcement[];
+   latestReport: MonthlyReport | null;
+   stats: {
+     month: number;
+diff --git a/client/src/types/index.ts b/client/src/types/index.ts
+index 40f6c14..2f5cde0 100644
+--- a/client/src/types/index.ts
++++ b/client/src/types/index.ts
+@@ -16,6 +16,39 @@ export type User = {
+   updatedAt: string;
+ };
+ 
++
++export type AnnouncementTone = "info" | "success" | "warning";
++
++export type AnnouncementAuthor = {
++  _id: string;
++  fullName: string;
++  email: string;
++  role: UserRole;
++};
++
++export type Announcement = {
++  _id: string;
++  title: string;
++  message: string;
++  tone: AnnouncementTone;
++  active: boolean;
++  createdBy: string | AnnouncementAuthor;
++  updatedBy: string | AnnouncementAuthor | null;
++  createdAt: string;
++  updatedAt: string;
++};
++
++export type CreateAnnouncementInput = {
++  title: string;
++  message: string;
++  tone: AnnouncementTone;
++  active?: boolean;
++};
++
++export type UpdateAnnouncementInput = Partial<CreateAnnouncementInput> & {
++  active?: boolean;
++};
++
+ export type Priority = "low" | "medium" | "high";
+ export type TaskStatus = "inbox" | "active" | "completed" | "archived";
+ export type RecurringType = "none" | "daily" | "weekly" | "monthly";
+diff --git a/server/src/app.ts b/server/src/app.ts
+index d54342b..3ea55e5 100644
+--- a/server/src/app.ts
++++ b/server/src/app.ts
+@@ -5,6 +5,7 @@ import express from "express";
+ import helmet from "helmet";
+ import morgan from "morgan";
+ import authRoutes from "./routes/auth.routes.js";
++import announcementRoutes from "./routes/announcement.routes.js";
+ import dashboardRoutes from "./routes/dashboard.routes.js";
+ import feedbackRoutes from "./routes/feedback.routes.js";
+ import noteRoutes from "./routes/note.routes.js";
+@@ -32,6 +33,7 @@ app.use(morgan("dev"));
+ app.get("/health", (_req, res) => res.json({ ok: true, app: "Mono - NotesToDo API" }));
+ 
+ app.use("/api/auth", authRoutes);
++app.use("/api/announcements", announcementRoutes);
+ app.use("/api/dashboard", dashboardRoutes);
+ app.use("/api/tasks", taskRoutes);
+ app.use("/api/notes", noteRoutes);
+diff --git a/server/src/controllers/announcement.controller.ts b/server/src/controllers/announcement.controller.ts
+new file mode 100644
+index 0000000..e51d5fc
+--- /dev/null
++++ b/server/src/controllers/announcement.controller.ts
+@@ -0,0 +1,127 @@
++import type { Request, Response } from "express";
++import Announcement, {
++  ANNOUNCEMENT_TONES,
++  type AnnouncementTone,
++} from "../models/Announcement.js";
++
++function cleanText(value: unknown, maxLength: number) {
++  if (typeof value !== "string") return "";
++  return value.trim().slice(0, maxLength);
++}
++
++function normalizeTone(value: unknown): AnnouncementTone {
++  const requestedTone = cleanText(value, 30);
++  return ANNOUNCEMENT_TONES.includes(requestedTone as AnnouncementTone)
++    ? (requestedTone as AnnouncementTone)
++    : "info";
++}
++
++function canManageAnnouncements(role: string | undefined) {
++  return role === "admin" || role === "manager";
++}
++
++export async function getAnnouncements(req: Request, res: Response) {
++  const managerView = canManageAnnouncements(req.user?.role);
++  const query = managerView ? {} : { active: true };
++
++  const announcements = await Announcement.find(query)
++    .sort({ active: -1, createdAt: -1 })
++    .populate("createdBy", "fullName email role")
++    .populate("updatedBy", "fullName email role")
++    .lean();
++
++  res.json({ announcements });
++}
++
++export async function createAnnouncement(req: Request, res: Response) {
++  const title = cleanText(req.body.title, 120);
++  const message = cleanText(req.body.message, 900);
++  const tone = normalizeTone(req.body.tone);
++
++  if (!title) {
++    return res.status(400).json({ message: "Announcement title is required" });
++  }
++
++  if (!message) {
++    return res.status(400).json({ message: "Announcement message is required" });
++  }
++
++  if (message.length < 8) {
++    return res.status(400).json({
++      message: "Announcement message should be at least 8 characters",
++    });
++  }
++
++  const announcement = await Announcement.create({
++    title,
++    message,
++    tone,
++    active: req.body.active === false ? false : true,
++    createdBy: req.user!.id,
++    updatedBy: req.user!.id,
++  });
++
++  const populated = await Announcement.findById(announcement._id)
++    .populate("createdBy", "fullName email role")
++    .populate("updatedBy", "fullName email role");
++
++  res.status(201).json({ announcement: populated });
++}
++
++export async function updateAnnouncement(req: Request, res: Response) {
++  const update: Record<string, unknown> = {
++    updatedBy: req.user!.id,
++  };
++
++  if (typeof req.body.title !== "undefined") {
++    const title = cleanText(req.body.title, 120);
++    if (!title) {
++      return res.status(400).json({ message: "Announcement title is required" });
++    }
++    update.title = title;
++  }
++
++  if (typeof req.body.message !== "undefined") {
++    const message = cleanText(req.body.message, 900);
++    if (!message) {
++      return res.status(400).json({ message: "Announcement message is required" });
++    }
++    if (message.length < 8) {
++      return res.status(400).json({
++        message: "Announcement message should be at least 8 characters",
++      });
++    }
++    update.message = message;
++  }
++
++  if (typeof req.body.tone !== "undefined") {
++    update.tone = normalizeTone(req.body.tone);
++  }
++
++  if (typeof req.body.active !== "undefined") {
++    update.active = Boolean(req.body.active);
++  }
++
++  const announcement = await Announcement.findByIdAndUpdate(req.params.id, update, {
++    new: true,
++    runValidators: true,
++  })
++    .populate("createdBy", "fullName email role")
++    .populate("updatedBy", "fullName email role");
++
++  if (!announcement) {
++    return res.status(404).json({ message: "Announcement not found" });
++  }
++
++  res.json({ announcement });
++}
++
++export async function deleteAnnouncement(req: Request, res: Response) {
++  const announcement = await Announcement.findByIdAndDelete(req.params.id);
++
++  if (!announcement) {
++    return res.status(404).json({ message: "Announcement not found" });
++  }
++
++  res.json({ message: "Announcement deleted" });
++}
+diff --git a/server/src/controllers/dashboard.controller.ts b/server/src/controllers/dashboard.controller.ts
+index 89ecb6e..dd4fa04 100644
+--- a/server/src/controllers/dashboard.controller.ts
++++ b/server/src/controllers/dashboard.controller.ts
+@@ -3,6 +3,7 @@ import Task from "../models/Task.js";
+ import Note from "../models/Note.js";
+ import Project from "../models/Project.js";
+ import MonthlyReport from "../models/MonthlyReport.js";
++import Announcement from "../models/Announcement.js";
+ import { getMonthInfo } from "../utils/dateUtils.js";
+ 
+ export async function getDashboard(req: Request, res: Response) {
+@@ -12,7 +13,9 @@ export async function getDashboard(req: Request, res: Response) {
+   const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+   const current = getMonthInfo();
+ 
+-  const [todayTasks, overdueTasks, monthTasks, recentNotes, projects, latestReport] = await Promise.all([
++  const canManageAnnouncements = req.user!.role === "admin" || req.user!.role === "manager";
++
++  const [todayTasks, overdueTasks, monthTasks, recentNotes, projects, latestReport, announcements] = await Promise.all([
+     Task.find({ userId, archived: false, dueDate: { $gte: todayStart, $lt: todayEnd }, status: { $ne: "completed" } })
+       .sort({ dueDate: 1 })
+       .limit(6)
+@@ -25,6 +28,12 @@ export async function getDashboard(req: Request, res: Response) {
+     Note.find({ userId, archived: false }).sort({ pinned: -1, updatedAt: -1 }).limit(5).lean(),
+     Project.find({ userId, archived: false }).sort({ updatedAt: -1 }).limit(5).lean(),
+     MonthlyReport.findOne({ userId }).sort({ year: -1, month: -1 }).lean(),
++    Announcement.find(canManageAnnouncements ? {} : { active: true })
++      .sort({ active: -1, createdAt: -1 })
++      .limit(8)
++      .populate("createdBy", "fullName email role")
++      .populate("updatedBy", "fullName email role")
++      .lean(),
+   ]);
+ 
+   const completed = monthTasks.filter((task) => task.status === "completed").length;
+@@ -36,6 +45,7 @@ export async function getDashboard(req: Request, res: Response) {
+     overdueTasks,
+     recentNotes,
+     projects,
++    announcements,
+     latestReport,
+     stats: {
+       month: current.month,
+diff --git a/server/src/models/Announcement.ts b/server/src/models/Announcement.ts
+new file mode 100644
+index 0000000..0e5dced
+--- /dev/null
++++ b/server/src/models/Announcement.ts
+@@ -0,0 +1,53 @@
++import mongoose from "mongoose";
++
++export const ANNOUNCEMENT_TONES = ["info", "success", "warning"] as const;
++export type AnnouncementTone = (typeof ANNOUNCEMENT_TONES)[number];
++
++const announcementSchema = new mongoose.Schema(
++  {
++    title: {
++      type: String,
++      required: true,
++      trim: true,
++      maxlength: 120,
++    },
++    message: {
++      type: String,
++      required: true,
++      trim: true,
++      maxlength: 900,
++    },
++    tone: {
++      type: String,
++      enum: ANNOUNCEMENT_TONES,
++      default: "info",
++      index: true,
++    },
++    active: {
++      type: Boolean,
++      default: true,
++      index: true,
++    },
++    createdBy: {
++      type: mongoose.Schema.Types.ObjectId,
++      ref: "User",
++      required: true,
++    },
++    updatedBy: {
++      type: mongoose.Schema.Types.ObjectId,
++      ref: "User",
++      default: null,
++    },
++  },
++  { timestamps: true }
++);
++
++announcementSchema.set("toJSON", {
++  transform(_doc, ret) {
++    const safe = ret as Record<string, unknown>;
++    delete safe.__v;
++    return safe;
++  },
++});
++
++export default mongoose.model("Announcement", announcementSchema);
+diff --git a/server/src/routes/announcement.routes.ts b/server/src/routes/announcement.routes.ts
+new file mode 100644
+index 0000000..2f2b934
+--- /dev/null
++++ b/server/src/routes/announcement.routes.ts
+@@ -0,0 +1,19 @@
++import { Router } from "express";
++import {
++  createAnnouncement,
++  deleteAnnouncement,
++  getAnnouncements,
++  updateAnnouncement,
++} from "../controllers/announcement.controller.js";
++import { requireAuth, requireRole } from "../middleware/auth.middleware.js";
++
++const router = Router();
++
++router.use(requireAuth);
++
++router.get("/", getAnnouncements);
++router.post("/", requireRole("admin", "manager"), createAnnouncement);
++router.patch("/:id", requireRole("admin", "manager"), updateAnnouncement);
++router.delete("/:id", requireRole("admin", "manager"), deleteAnnouncement);
++
++export default router;
