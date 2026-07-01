@@ -91,30 +91,57 @@ export function AuthBackground() {
       {/* Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_70%)]" />
 
-      {/* Watermark */}
-      <div
-        className="
-          absolute
-          left-1/2
-          top-10
-          -translate-x-1/2
-          select-none
-          font-black
-          tracking-tighter
-          text-white/[0.025]
+      {/* Mobile Watermark */}
+        <div
+          className="
+            lg:hidden
 
-          text-[6rem]
+            absolute
+            inset-x-0
+            top-14
 
-          md:text-[8rem]
+            flex
+            justify-center
 
-          lg:text-[11rem]
-          lg:left-16
-          lg:top-20
-          lg:translate-x-0
-        "
+            select-none
+            pointer-events-none
+          "
+          >
+          <span
+            className="
+              font-black
+              tracking-tighter
+              text-[6.5rem]
+              leading-none
+              text-white/[0.025]
+            "
+          >
+            MONO
+          </span>
+        </div>
+
+{/* Desktop Watermark */}
+    <div
+      className="
+        hidden
+        lg:block
+
+        absolute
+        left-16
+        top-20
+
+        select-none
+        pointer-events-none
+
+        font-black
+        tracking-tighter
+        text-[11rem]
+        leading-none
+        text-white/[0.025]
+      "
       >
-        MONO
-      </div>
+      MONO
+    </div>
 
       {/* Desktop Quote */}
       <AnimatePresence mode="wait">

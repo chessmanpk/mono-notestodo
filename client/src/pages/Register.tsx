@@ -32,7 +32,7 @@ export default function Register() {
   return (
     <AuthShell title="Create your workspace" description="Start a fresh monthly operating system for your tasks and notes.">
       <form onSubmit={submit} className="space-y-4">
-        <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Full name" required />
+        <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="User Name with an Emoji" required />
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
         <Input type="password" minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password, minimum 8 characters" required />
         <Button className="w-full" disabled={loading}>{loading ? "Creating..." : "Create account"}</Button>

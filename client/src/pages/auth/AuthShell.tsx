@@ -118,7 +118,7 @@ export function AuthShell({
         text-[var(--text)]
 
         px-4
-        pt-24
+        pt-40
         pb-10
 
         lg:items-center
@@ -129,7 +129,7 @@ export function AuthShell({
 
       <div className="relative z-10 w-full max-w-md">
 
-        {/* Logo */}
+        {/* Logo
         <div className="mb-8 text-center">
           <p className="text-2xl font-semibold tracking-tight">
             Mono
@@ -138,7 +138,7 @@ export function AuthShell({
           <p className="mt-1 text-sm text-[var(--muted)]">
             NotesToDo
           </p>
-        </div>
+        </div> */}
 
         {/* Card */}
         <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur-xl p-6 shadow-xl">
