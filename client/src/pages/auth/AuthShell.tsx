@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { AuthBackground } from "../../components/auth/AuthBackground";
+import { useThemeStore } from "../../store/theme.store";
 
 const MONTHLY_QUOTES: Record<number, string[]> = {
   0: [
@@ -96,6 +97,14 @@ export function AuthShell({
 
   const [quoteIndex, setQuoteIndex] = useState(0);
 
+  const theme = useThemeStore((state) => state.theme);
+
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" &&
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setQuoteIndex((prev) => (prev + 1) % quotes.length);
@@ -171,7 +180,9 @@ export function AuthShell({
                 duration: 0.7,
                 ease: "easeInOut",
               }}
-              className="mx-auto max-w-xs text-lg font-medium leading-8 text-white/45"
+              className={`mx-auto max-w-xs text-lg font-medium leading-8 ${
+                isDark ? "text-white/45" : "text-black/60"
+              }`}
             >
               {quotes[quoteIndex]}
             </motion.p>
@@ -182,7 +193,10 @@ export function AuthShell({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="mt-5 text-[11px] uppercase tracking-[0.45em] text-white/15"
+
+            className={`mt-5 text-[11px] uppercase tracking-[0.45em] ${
+              isDark ? "text-white/15" : "text-black/35"
+            }`}
           >
             RESET • PLAN • BUILD
           </motion.p>

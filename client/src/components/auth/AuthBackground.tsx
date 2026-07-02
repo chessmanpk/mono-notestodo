@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
+import { useThemeStore } from "../../store/theme.store";
 
 type Quote = {
   text: string[];
@@ -85,11 +86,41 @@ export function AuthBackground() {
 
   const quote = quotes[index];
 
+  const theme = useThemeStore((state) => state.theme);
+
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" &&
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  const styles = {
+    glow: isDark
+      ? "bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_70%)]"
+      : "bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.035),transparent_70%)]",
+
+    watermark: isDark
+      ? "text-white/[0.025]"
+      : "text-black/[0.06]",
+
+    quote: isDark
+      ? "text-white/12"
+      : "text-black/20",
+
+    highlight: isDark
+      ? "text-white/70"
+      : "text-black/60",
+
+    footer: isDark
+      ? "text-white/10"
+      : "text-black/20",
+  };
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
 
       {/* Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_70%)]" />
+      <div className={`absolute inset-0 ${styles.glow}`} />
 
       {/* Mobile Watermark */}
         <div
@@ -108,13 +139,13 @@ export function AuthBackground() {
           "
           >
           <span
-            className="
+            className={`
               font-black
               tracking-tighter
               text-[6.5rem]
               leading-none
-              text-white/[0.025]
-            "
+              ${styles.watermark}
+            `}
           >
             MONO
           </span>
@@ -122,7 +153,7 @@ export function AuthBackground() {
 
 {/* Desktop Watermark */}
     <div
-      className="
+      className={`
         hidden
         lg:block
 
@@ -137,8 +168,9 @@ export function AuthBackground() {
         tracking-tighter
         text-[11rem]
         leading-none
-        text-white/[0.025]
-      "
+
+        ${styles.watermark}
+       `}
       >
       MONO
     </div>
@@ -166,11 +198,11 @@ export function AuthBackground() {
             <div
               key={i}
               className={`text-5xl font-semibold tracking-tight ${
-                i === quote.highlight
-                  ? "text-white/70"
-                  : "text-white/12"
+              i === quote.highlight
+                ? styles.highlight
+                : styles.quote
               }`}
-            >
+              >
               {word}
             </div>
           ))}
@@ -179,7 +211,7 @@ export function AuthBackground() {
 
       {/* Footer - Desktop only */}
       <div
-        className="
+        className={`
           hidden
           lg:block
 
@@ -190,8 +222,8 @@ export function AuthBackground() {
           text-xs
           uppercase
           tracking-[0.45em]
-          text-white/10
-        "
+          ${styles.footer}
+        `}
       >
         RESET • PLAN • BUILD
       </div>
