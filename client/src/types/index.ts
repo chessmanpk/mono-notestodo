@@ -1,6 +1,35 @@
 export type Theme = "system" | "light" | "dark";
 export type UserRole = "admin" | "manager" | "user";
 
+export type PrayerName = "fajr" | "dhuhr" | "asr" | "maghrib" | "isha";
+export type PrayerStatus = "pending" | "onTime" | "late" | "qada" | "missed";
+
+export type NamazTrackerSettings = {
+  enabled: boolean;
+  calculationMethod: string;
+  madhab: "shafi" | "hanafi";
+  location: {
+    lat: number | null;
+    lng: number | null;
+    label: string;
+  };
+};
+
+export type PrayerLog = {
+  _id?: string;
+  userId: string;
+  date: string; // "YYYY-MM-DD"
+  month: number;
+  year: number;
+  fajr: PrayerStatus;
+  dhuhr: PrayerStatus;
+  asr: PrayerStatus;
+  maghrib: PrayerStatus;
+  isha: PrayerStatus;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type User = {
   _id: string;
   fullName: string;
@@ -12,6 +41,7 @@ export type User = {
     overdueTasks: boolean;
     quietMode: boolean;
   };
+  namazTracker: NamazTrackerSettings;
   createdAt: string;
   updatedAt: string;
 };

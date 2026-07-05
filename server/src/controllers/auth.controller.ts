@@ -164,13 +164,31 @@ export async function resetPassword(req: Request, res: Response) {
 }
 
 export async function updateProfile(req: Request, res: Response) {
-  const { fullName, theme, notificationPreferences } = req.body;
+  const { fullName, theme, notificationPreferences, namazTracker } = req.body;
   const update: Record<string, unknown> = {};
 
   if (fullName) update.fullName = String(fullName).trim();
   if (["system", "light", "dark"].includes(theme)) update.theme = theme;
   if (notificationPreferences && typeof notificationPreferences === "object") {
     update.notificationPreferences = notificationPreferences;
+  }
+
+  if (namazTracker && typeof namazTracker === "object") {
+    if (typeof namazTracker.enabled === "boolean") {
+      update["namazTracker.enabled"] = namazTracker.enabled;
+    }
+    if (typeof namazTracker.calculationMethod === "string" && namazTracker.calculationMethod.trim()) {
+      update["namazTracker.calculationMethod"] = namazTracker.calculationMethod.trim();
+    }
+    if (["shafi", "hanafi"].includes(namazTracker.madhab)) {
+      update["namazTracker.madhab"] = namazTracker.madhab;
+    }
+    if (namazTracker.location && typeof namazTracker.location === "object") {
+      const { lat, lng, label } = namazTracker.location;
+      if (typeof lat === "number" && Number.isFinite(lat)) update["namazTracker.location.lat"] = lat;
+      if (typeof lng === "number" && Number.isFinite(lng)) update["namazTracker.location.lng"] = lng;
+      if (typeof label === "string") update["namazTracker.location.label"] = label.trim();
+    }
   }
 
   const user = await User.findByIdAndUpdate(req.user!.id, update, { new: true });

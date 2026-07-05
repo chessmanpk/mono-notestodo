@@ -6,6 +6,7 @@ import {
   Info,
   ListTodo,
   MessageSquare,
+  Moon,
   Settings,
   ShieldCheck,
   X,
@@ -21,11 +22,13 @@ type NavItem = {
   path: string;
   icon: typeof Home;
   allowedRoles?: UserRole[];
+  requiresNamaz?: boolean;
 };
 
 const nav: NavItem[] = [
   { label: "Dashboard", path: "/dashboard", icon: Home },
   { label: "Tasks", path: "/tasks", icon: ListTodo },
+  { label: "Prayers", path: "/prayers", icon: Moon, requiresNamaz: true },
   { label: "Notes", path: "/notes", icon: FileText },
   { label: "Projects", path: "/projects", icon: FolderKanban },
   { label: "Reports", path: "/reports", icon: BarChart3 },
@@ -43,7 +46,11 @@ export function Sidebar({
   onClose: () => void;
 }) {
   const user = useAuthStore((state) => state.user);
-  const visibleNav = nav.filter((item) => !item.allowedRoles || (user && item.allowedRoles.includes(user.role)));
+  const visibleNav = nav.filter((item) => {
+    const roleOk = !item.allowedRoles || (user && item.allowedRoles.includes(user.role));
+    const namazOk = !item.requiresNamaz || user?.namazTracker?.enabled;
+    return roleOk && namazOk;
+  });
 
   return (
     <>

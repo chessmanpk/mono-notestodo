@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import Login from "./pages/Login";
 import Notes from "./pages/Notes";
+import Prayers from "./pages/Prayers";
 import Projects from "./pages/Projects";
 import Register from "./pages/Register";
 import Reports from "./pages/Reports";
@@ -38,6 +39,7 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/prayers" element={<Prayers />} />
             <Route path="/notes" element={<Notes />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/reports" element={<Reports />} />

@@ -35,6 +35,9 @@ export const authService = {
     fullName?: string;
     theme?: Theme;
     notificationPreferences?: User["notificationPreferences"];
+    namazTracker?: Partial<Omit<User["namazTracker"], "location">> & {
+      location?: Partial<User["namazTracker"]["location"]>;
+    };
   }) {
     const res = await api.patch<{ user: User }>("/auth/profile", data);
     return res.data.user;

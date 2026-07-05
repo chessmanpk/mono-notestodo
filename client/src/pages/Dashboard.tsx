@@ -10,6 +10,7 @@ import {
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { toast } from "sonner";
 import { MonthlyResetCountdown } from "../components/dashboard/MonthlyResetCountdown";
+import { PrayerWidget } from "../components/prayers/PrayerWidget";
 import { EmptyState } from "../components/shared/EmptyState";
 import { LoadingSkeleton } from "../components/shared/LoadingSkeleton";
 import { QuickAdd } from "../components/shared/QuickAdd";
@@ -346,6 +347,8 @@ export default function Dashboard() {
         onClose={() => setSelectedPreview(null)}
         previewRef={previewRef}
       />
+
+      <PrayerWidget />
 
       <div className="grid w-full max-w-full gap-6 overflow-hidden xl:grid-cols-2">
         <section className="min-w-0 space-y-3">

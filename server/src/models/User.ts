@@ -15,6 +15,16 @@ const userSchema = new mongoose.Schema(
       overdueTasks: { type: Boolean, default: true },
       quietMode: { type: Boolean, default: true },
     },
+    namazTracker: {
+      enabled: { type: Boolean, default: false },
+      calculationMethod: { type: String, default: "MuslimWorldLeague" },
+      madhab: { type: String, enum: ["shafi", "hanafi"], default: "shafi" },
+      location: {
+        lat: { type: Number, default: null },
+        lng: { type: Number, default: null },
+        label: { type: String, default: "" },
+      },
+    },
     resetPasswordTokenHash: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },
     lastMonthlyResetKey: { type: String, default: null },
