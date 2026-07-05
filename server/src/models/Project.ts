@@ -7,6 +7,7 @@ const projectSchema = new mongoose.Schema(
     description: { type: String, default: "", maxlength: 3000 },
     status: { type: String, enum: ["planning", "active", "paused", "completed", "archived"], default: "active", index: true },
     progress: { type: Number, default: 0, min: 0, max: 100 },
+    linkedTaskCount: { type: Number, default: 0 },
     cycleMonth: { type: Number, required: true, index: true },
     cycleYear: { type: Number, required: true, index: true },
     archived: { type: Boolean, default: false, index: true },

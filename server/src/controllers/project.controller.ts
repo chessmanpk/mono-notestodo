@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import Project from "../models/Project.js";
+import Task from "../models/Task.js";
+import { syncProjectProgress } from "../services/projectProgress.service.js";
 import { getMonthInfo } from "../utils/dateUtils.js";
 
 export async function getProjects(req: Request, res: Response) {
@@ -40,11 +42,18 @@ export async function updateProject(req: Request, res: Response) {
   });
 
   if (!project) return res.status(404).json({ message: "Project not found" });
-  res.json({ project });
+
+  await syncProjectProgress(String(project._id), req.user!.id);
+  const refreshed = await Project.findOne({ _id: project._id, userId: req.user!.id });
+
+  res.json({ project: refreshed });
 }
 
 export async function deleteProject(req: Request, res: Response) {
   const project = await Project.findOneAndDelete({ _id: req.params.id, userId: req.user!.id });
   if (!project) return res.status(404).json({ message: "Project not found" });
+
+  await Task.updateMany({ userId: req.user!.id, projectId: project._id }, { $set: { projectId: null } });
+
   res.json({ message: "Project deleted" });
 }

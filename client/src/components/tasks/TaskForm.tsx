@@ -1,12 +1,22 @@
 import { FormEvent, useMemo, useState } from "react";
-import type { Task } from "../../types";
+import type { Project, Task } from "../../types";
 import { toInputDate } from "../../utils/format";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
 import { Textarea } from "../ui/Textarea";
 
-export function TaskForm({ task, onSubmit, onCancel }: { task?: Task | null; onSubmit: (data: any) => Promise<void>; onCancel: () => void }) {
+export function TaskForm({
+  task,
+  projects,
+  onSubmit,
+  onCancel,
+}: {
+  task?: Task | null;
+  projects: Project[];
+  onSubmit: (data: any) => Promise<void>;
+  onCancel: () => void;
+}) {
   const initialTags = useMemo(() => task?.tags.join(", ") ?? "", [task]);
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
@@ -16,6 +26,7 @@ export function TaskForm({ task, onSubmit, onCancel }: { task?: Task | null; onS
   const [recurring, setRecurring] = useState(task?.recurring ?? false);
   const [recurringType, setRecurringType] = useState(task?.recurringType ?? "monthly");
   const [tags, setTags] = useState(initialTags);
+  const [projectId, setProjectId] = useState(task?.projectId ?? "");
   const [loading, setLoading] = useState(false);
 
   async function submit(event: FormEvent) {
@@ -31,6 +42,7 @@ export function TaskForm({ task, onSubmit, onCancel }: { task?: Task | null; onS
         recurring,
         recurringType: recurring ? recurringType : "none",
         tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+        projectId: projectId || null,
       });
     } finally {
       setLoading(false);
@@ -66,6 +78,12 @@ export function TaskForm({ task, onSubmit, onCancel }: { task?: Task | null; onS
         </Select>
       </div>
       <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Tags separated by comma: study, work" />
+      <Select value={projectId} onChange={(e) => setProjectId(e.target.value)}>
+        <option value="">No project</option>
+        {projects.map((project) => (
+          <option key={project._id} value={project._id}>{project.title}</option>
+        ))}
+      </Select>
       <div className="flex justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
         <Button disabled={loading || !title.trim()}>{loading ? "Saving..." : "Save task"}</Button>

@@ -12,6 +12,9 @@ export function ProjectForm({ project, onSubmit, onCancel }: { project?: Project
   const [progress, setProgress] = useState(project?.progress ?? 0);
   const [loading, setLoading] = useState(false);
 
+  const linkedTaskCount = project?.linkedTaskCount ?? 0;
+  const progressIsAuto = linkedTaskCount > 0;
+
   async function submit(event: FormEvent) {
     event.preventDefault();
     setLoading(true);
@@ -33,7 +36,22 @@ export function ProjectForm({ project, onSubmit, onCancel }: { project?: Project
           <option value="paused">Paused</option>
           <option value="completed">Completed</option>
         </Select>
-        <Input type="number" min="0" max="100" value={progress} onChange={(e) => setProgress(Number(e.target.value))} />
+        <div>
+          <Input
+            type="number"
+            min="0"
+            max="100"
+            value={progress}
+            disabled={progressIsAuto}
+            onChange={(e) => setProgress(Number(e.target.value))}
+            className={progressIsAuto ? "opacity-50" : undefined}
+          />
+          {progressIsAuto && (
+            <p className="mt-1.5 text-xs text-[var(--muted)]">
+              Auto-calculated from {linkedTaskCount} linked {linkedTaskCount === 1 ? "task" : "tasks"}
+            </p>
+          )}
+        </div>
       </div>
       <div className="flex justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>

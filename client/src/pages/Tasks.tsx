@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { EmptyState } from "../components/shared/EmptyState";
 import { LoadingSkeleton } from "../components/shared/LoadingSkeleton";
@@ -10,8 +10,9 @@ import { TaskForm } from "../components/tasks/TaskForm";
 import { Button } from "../components/ui/Button";
 import { Select } from "../components/ui/Select";
 import { getErrorMessage } from "../services/api";
+import { projectService } from "../services/project.service";
 import { taskService } from "../services/task.service";
-import type { Task } from "../types";
+import type { Project, Task } from "../types";
 import { cn } from "../utils/cn";
 
 const views = [
@@ -25,12 +26,19 @@ const views = [
 
 export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [view, setView] = useState("inbox");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
+
+  const projectTitleById = useMemo(() => {
+    const map = new Map<string, string>();
+    projects.forEach((project) => map.set(project._id, project.title));
+    return map;
+  }, [projects]);
 
   async function load() {
     try {
@@ -45,6 +53,7 @@ export default function Tasks() {
   }
 
   useEffect(() => { load(); }, [view, search, sort]);
+  useEffect(() => { projectService.list({ archived: "false" }).then(setProjects).catch(() => {}); }, []);
 
   function openNew() {
     setEditing(null);
@@ -100,10 +109,10 @@ export default function Tasks() {
         </div>
       </div>
 
-      {loading ? <LoadingSkeleton rows={4} /> : tasks.length === 0 ? <EmptyState title="No tasks here" description="Keep the month light. Add a task only when it deserves attention." action={<Button onClick={openNew}>Create task</Button>} /> : <div className="space-y-3">{tasks.map((task) => <TaskCard key={task._id} task={task} onEdit={() => { setEditing(task); setModalOpen(true); }} onDelete={() => remove(task)} onToggle={() => toggle(task)} />)}</div>}
+      {loading ? <LoadingSkeleton rows={4} /> : tasks.length === 0 ? <EmptyState title="No tasks here" description="Keep the month light. Add a task only when it deserves attention." action={<Button onClick={openNew}>Create task</Button>} /> : <div className="space-y-3">{tasks.map((task) => <TaskCard key={task._id} task={task} projectTitle={task.projectId ? projectTitleById.get(task.projectId) : undefined} onEdit={() => { setEditing(task); setModalOpen(true); }} onDelete={() => remove(task)} onToggle={() => toggle(task)} />)}</div>}
 
       <Modal open={modalOpen} title={editing ? "Edit task" : "New task"} onClose={() => setModalOpen(false)}>
-        <TaskForm task={editing} onSubmit={save} onCancel={() => setModalOpen(false)} />
+        <TaskForm task={editing} projects={projects} onSubmit={save} onCancel={() => setModalOpen(false)} />
       </Modal>
     </div>
   );

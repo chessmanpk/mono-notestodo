@@ -1,10 +1,22 @@
-import { Calendar, CheckCircle2, Circle, Repeat2, Tag } from "lucide-react";
+import { Calendar, CheckCircle2, Circle, FolderKanban, Repeat2, Tag } from "lucide-react";
 import type { Task } from "../../types";
 import { cn } from "../../utils/cn";
 import { isOverdue, niceDate } from "../../utils/format";
 import { Button } from "../ui/Button";
 
-export function TaskCard({ task, onEdit, onDelete, onToggle }: { task: Task; onEdit: () => void; onDelete: () => void; onToggle: () => void }) {
+export function TaskCard({
+  task,
+  projectTitle,
+  onEdit,
+  onDelete,
+  onToggle,
+}: {
+  task: Task;
+  projectTitle?: string;
+  onEdit: () => void;
+  onDelete: () => void;
+  onToggle: () => void;
+}) {
   const completed = task.status === "completed";
 
   return (
@@ -22,6 +34,7 @@ export function TaskCard({ task, onEdit, onDelete, onToggle }: { task: Task; onE
           <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-[var(--muted)]">
             <span className={cn("inline-flex items-center gap-1", isOverdue(task.dueDate) && task.status !== "completed" && "text-red-500")}><Calendar className="h-3.5 w-3.5" />{niceDate(task.dueDate)}</span>
             {task.recurring && <span className="inline-flex items-center gap-1"><Repeat2 className="h-3.5 w-3.5" />{task.recurringType}</span>}
+            {projectTitle && <span className="inline-flex items-center gap-1"><FolderKanban className="h-3.5 w-3.5" />{projectTitle}</span>}
             {task.tags.map((tag) => <span key={tag} className="inline-flex items-center gap-1"><Tag className="h-3.5 w-3.5" />{tag}</span>)}
           </div>
         </div>

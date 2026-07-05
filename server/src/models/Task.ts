@@ -11,6 +11,7 @@ const taskSchema = new mongoose.Schema(
     recurring: { type: Boolean, default: false },
     recurringType: { type: String, enum: ["none", "daily", "weekly", "monthly"], default: "none" },
     tags: { type: [String], default: [] },
+    projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project", default: null, index: true },
     cycleMonth: { type: Number, required: true, index: true },
     cycleYear: { type: Number, required: true, index: true },
     archived: { type: Boolean, default: false, index: true },

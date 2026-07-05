@@ -94,6 +94,7 @@ export type Task = {
   recurring: boolean;
   recurringType: RecurringType;
   tags: string[];
+  projectId: string | null;
   cycleMonth: number;
   cycleYear: number;
   archived: boolean;
@@ -123,6 +124,7 @@ export type Project = {
   description: string;
   status: "planning" | "active" | "paused" | "completed" | "archived";
   progress: number;
+  linkedTaskCount: number;
   cycleMonth: number;
   cycleYear: number;
   archived: boolean;
