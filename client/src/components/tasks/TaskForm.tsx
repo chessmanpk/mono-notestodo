@@ -4,7 +4,7 @@ import { toInputDate } from "../../utils/format";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
-import { Textarea } from "../ui/Textarea";
+import { MarkdownEditor } from "../shared/MarkdownEditor";
 
 export function TaskForm({
   task,
@@ -52,7 +52,7 @@ export function TaskForm({
   return (
     <form onSubmit={submit} className="space-y-4">
       <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Task title" required />
-      <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+      <MarkdownEditor value={description} onChange={setDescription} />
       <div className="grid gap-3 sm:grid-cols-3">
         <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
         <Select value={priority} onChange={(e) => setPriority(e.target.value as any)}>

@@ -11,6 +11,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { toast } from "sonner";
 import { MonthlyResetCountdown } from "../components/dashboard/MonthlyResetCountdown";
 import { PrayerWidget } from "../components/prayers/PrayerWidget";
+import ReactMarkdown from "react-markdown";
 import { EmptyState } from "../components/shared/EmptyState";
 import { LoadingSkeleton } from "../components/shared/LoadingSkeleton";
 import { QuickAdd } from "../components/shared/QuickAdd";
@@ -197,9 +198,9 @@ function DashboardPreviewCard({
       </div>
 
       <div className="mt-5 max-w-full overflow-hidden rounded-2xl bg-[var(--surface-soft)] p-4">
-        <p className="max-w-full whitespace-pre-wrap break-words text-sm leading-7 text-[var(--muted)]">
-          {body}
-        </p>
+        <div className="prose-mono max-w-full text-sm">
+          <ReactMarkdown>{body}</ReactMarkdown>
+        </div>
       </div>
 
       {isTask && (

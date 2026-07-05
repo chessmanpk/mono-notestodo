@@ -89,9 +89,43 @@ select:focus-visible {
   color: var(--muted);
 }
 
+.prose-mono ul {
+  list-style: disc;
+}
+
+.prose-mono ol {
+  list-style: decimal;
+}
+
+.prose-mono li {
+  margin: 0.2rem 0;
+}
+
+.prose-mono strong {
+  color: var(--text);
+  font-weight: 650;
+}
+
 .prose-mono code {
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   padding: 0.1rem 0.3rem;
   background: var(--surface-soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+}
+
+.prose-mono pre {
+  margin: 0.6rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-soft);
+  overflow-x: auto;
+}
+
+.prose-mono pre code {
+  border: 0;
+  padding: 0;
+  background: transparent;
 }

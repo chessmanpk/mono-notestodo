@@ -2,7 +2,7 @@ import { FormEvent, useMemo, useState } from "react";
 import type { Note } from "../../types";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
-import { MarkdownEditor } from "./MarkdownEditor";
+import { MarkdownEditor } from "../shared/MarkdownEditor";
 
 export function NoteForm({ note, onSubmit, onCancel }: { note?: Note | null; onSubmit: (data: any) => Promise<void>; onCancel: () => void }) {
   const initialTags = useMemo(() => note?.tags.join(", ") ?? "", [note]);

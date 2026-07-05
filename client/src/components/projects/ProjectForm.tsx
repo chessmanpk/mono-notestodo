@@ -3,7 +3,7 @@ import type { Project } from "../../types";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
-import { Textarea } from "../ui/Textarea";
+import { MarkdownEditor } from "../shared/MarkdownEditor";
 
 export function ProjectForm({ project, onSubmit, onCancel }: { project?: Project | null; onSubmit: (data: any) => Promise<void>; onCancel: () => void }) {
   const [title, setTitle] = useState(project?.title ?? "");
@@ -28,7 +28,7 @@ export function ProjectForm({ project, onSubmit, onCancel }: { project?: Project
   return (
     <form onSubmit={submit} className="space-y-4">
       <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Project title" required />
-      <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Project description" />
+      <MarkdownEditor value={description} onChange={setDescription} />
       <div className="grid gap-3 sm:grid-cols-2">
         <Select value={status} onChange={(e) => setStatus(e.target.value as any)}>
           <option value="planning">Planning</option>
