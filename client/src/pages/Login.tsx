@@ -5,6 +5,7 @@ import { getErrorMessage } from "../services/api";
 import { useAuthStore } from "../store/auth.store";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { PasswordInput } from "../components/ui/PasswordInput";
 import { AuthShell } from "./auth/AuthShell";
 
 export default function Login() {
@@ -33,7 +34,7 @@ export default function Login() {
     <AuthShell title="Welcome back" description="Enter your workspace quietly and continue the month.">
       <form onSubmit={submit} className="space-y-4">
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
+        <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2 text-[var(--muted)]"><input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} /> Remember me</label>
           <Link to="/forgot-password" className="text-[var(--text)] hover:underline">Forgot?</Link>

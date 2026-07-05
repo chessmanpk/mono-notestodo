@@ -31,7 +31,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-sm font-medium">{user?.fullName || "Workspace"}</p>
-              {user?.role && (
+              {(user?.role === "admin" || user?.role === "manager") && (
                 <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                   {roleLabel(user.role)}
                 </span>

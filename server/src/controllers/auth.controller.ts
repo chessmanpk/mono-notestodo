@@ -7,6 +7,7 @@ import Project from "../models/Project.js";
 import MonthlyReport from "../models/MonthlyReport.js";
 import ArchivedMonth from "../models/ArchivedMonth.js";
 import { createResetToken, hashResetToken, signAuthToken } from "../utils/tokens.js";
+import { endsWithEmoji } from "../utils/emoji.js";
 
 function cookieOptions(rememberMe = false) {
   return {
@@ -32,6 +33,10 @@ export async function register(req: Request, res: Response) {
 
   if (!fullName || !email || !password) {
     return res.status(400).json({ message: "Full name, email, and password are required" });
+  }
+
+  if (!endsWithEmoji(fullName)) {
+    return res.status(400).json({ message: "Your name must end with an emoji, e.g. Chessman🔥" });
   }
 
   if (String(password).length < 8) {
