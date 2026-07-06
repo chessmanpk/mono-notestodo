@@ -10,12 +10,14 @@ export function TaskCard({
   onEdit,
   onDelete,
   onToggle,
+  onPreview,
 }: {
   task: Task;
   projectTitle?: string;
   onEdit: () => void;
   onDelete: () => void;
   onToggle: () => void;
+  onPreview: () => void;
 }) {
   const completed = task.status === "completed";
 
@@ -25,7 +27,18 @@ export function TaskCard({
         <button onClick={onToggle} className="mt-0.5 text-[var(--muted)] hover:text-[var(--text)]" aria-label="Toggle task status">
           {completed ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}
         </button>
-        <div className="min-w-0 flex-1">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={onPreview}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onPreview();
+            }
+          }}
+          className="min-w-0 max-w-full flex-1 cursor-pointer"
+        >
           <div className="flex flex-wrap items-center gap-2">
             <h3 className={cn("font-medium tracking-tight", completed && "text-[var(--muted)] line-through")}>{task.title}</h3>
             <span className={cn("rounded-full border px-2 py-0.5 text-xs", task.priority === "high" && "border-red-500/20 text-red-500", task.priority === "medium" && "border-[var(--border)] text-[var(--muted)]", task.priority === "low" && "border-[var(--border)] text-[var(--muted)]")}>{task.priority}</span>
@@ -37,6 +50,7 @@ export function TaskCard({
             {projectTitle && <span className="inline-flex items-center gap-1"><FolderKanban className="h-3.5 w-3.5" />{projectTitle}</span>}
             {task.tags.map((tag) => <span key={tag} className="inline-flex items-center gap-1"><Tag className="h-3.5 w-3.5" />{tag}</span>)}
           </div>
+          <p className="mt-2 text-[11px] text-[var(--muted)]">Tap to preview</p>
         </div>
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
           <Button variant="secondary" size="sm" onClick={onEdit}>Edit</Button>

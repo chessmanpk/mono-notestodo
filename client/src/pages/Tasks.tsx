@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { EmptyState } from "../components/shared/EmptyState";
 import { LoadingSkeleton } from "../components/shared/LoadingSkeleton";
 import { Modal } from "../components/shared/Modal";
+import { PreviewModal } from "../components/shared/PreviewModal";
 import { SearchBar } from "../components/shared/SearchBar";
 import { TaskCard } from "../components/tasks/TaskCard";
 import { TaskForm } from "../components/tasks/TaskForm";
@@ -14,6 +15,7 @@ import { projectService } from "../services/project.service";
 import { taskService } from "../services/task.service";
 import type { Project, Task } from "../types";
 import { cn } from "../utils/cn";
+import { niceDate } from "../utils/format";
 
 const views = [
   { label: "Inbox", value: "inbox" },
@@ -33,6 +35,7 @@ export default function Tasks() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
+  const [previewTask, setPreviewTask] = useState<Task | null>(null);
 
   const projectTitleById = useMemo(() => {
     const map = new Map<string, string>();
@@ -109,11 +112,30 @@ export default function Tasks() {
         </div>
       </div>
 
-      {loading ? <LoadingSkeleton rows={4} /> : tasks.length === 0 ? <EmptyState title="No tasks here" description="Keep the month light. Add a task only when it deserves attention." action={<Button onClick={openNew}>Create task</Button>} /> : <div className="space-y-3">{tasks.map((task) => <TaskCard key={task._id} task={task} projectTitle={task.projectId ? projectTitleById.get(task.projectId) : undefined} onEdit={() => { setEditing(task); setModalOpen(true); }} onDelete={() => remove(task)} onToggle={() => toggle(task)} />)}</div>}
+      {loading ? <LoadingSkeleton rows={4} /> : tasks.length === 0 ? <EmptyState title="No tasks here" description="Keep the month light. Add a task only when it deserves attention." action={<Button onClick={openNew}>Create task</Button>} /> : <div className="space-y-3">{tasks.map((task) => <TaskCard key={task._id} task={task} projectTitle={task.projectId ? projectTitleById.get(task.projectId) : undefined} onEdit={() => { setEditing(task); setModalOpen(true); }} onDelete={() => remove(task)} onToggle={() => toggle(task)} onPreview={() => setPreviewTask(task)} />)}</div>}
 
       <Modal open={modalOpen} title={editing ? "Edit task" : "New task"} onClose={() => setModalOpen(false)}>
         <TaskForm task={editing} projects={projects} onSubmit={save} onCancel={() => setModalOpen(false)} />
       </Modal>
+
+      <PreviewModal
+        open={!!previewTask}
+        title={previewTask?.title ?? ""}
+        eyebrow="Task preview"
+        body={previewTask?.description ?? ""}
+        meta={previewTask && (
+          <>
+            <span className="rounded-full border border-[var(--border)] px-2 py-1">Status: {previewTask.status}</span>
+            <span className="rounded-full border border-[var(--border)] px-2 py-1">Priority: {previewTask.priority}</span>
+            {previewTask.dueDate && <span className="rounded-full border border-[var(--border)] px-2 py-1">Due: {niceDate(previewTask.dueDate)}</span>}
+            {previewTask.projectId && projectTitleById.get(previewTask.projectId) && (
+              <span className="rounded-full border border-[var(--border)] px-2 py-1">{projectTitleById.get(previewTask.projectId)}</span>
+            )}
+            {previewTask.tags.map((tag) => <span key={tag} className="rounded-full border border-[var(--border)] px-2 py-1">{tag}</span>)}
+          </>
+        )}
+        onClose={() => setPreviewTask(null)}
+      />
     </div>
   );
 }

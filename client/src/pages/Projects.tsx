@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { EmptyState } from "../components/shared/EmptyState";
 import { LoadingSkeleton } from "../components/shared/LoadingSkeleton";
 import { Modal } from "../components/shared/Modal";
+import { PreviewModal } from "../components/shared/PreviewModal";
 import { SearchBar } from "../components/shared/SearchBar";
 import { ProjectCard } from "../components/projects/ProjectCard";
 import { ProjectForm } from "../components/projects/ProjectForm";
@@ -18,6 +19,7 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
+  const [previewProject, setPreviewProject] = useState<Project | null>(null);
 
   async function load() {
     try {
@@ -61,10 +63,24 @@ export default function Projects() {
         <Button onClick={() => { setEditing(null); setModalOpen(true); }}><Plus className="h-4 w-4" /> New project</Button>
       </div>
       <div className="max-w-xl"><SearchBar value={search} onChange={setSearch} placeholder="Search projects..." /></div>
-      {loading ? <LoadingSkeleton rows={4} /> : projects.length === 0 ? <EmptyState title="No projects yet" description="Create one project for work that needs steady attention this month." action={<Button onClick={() => setModalOpen(true)}>Create project</Button>} /> : <div className="space-y-3">{projects.map((project) => <ProjectCard key={project._id} project={project} onEdit={() => { setEditing(project); setModalOpen(true); }} onDelete={() => remove(project)} />)}</div>}
+      {loading ? <LoadingSkeleton rows={4} /> : projects.length === 0 ? <EmptyState title="No projects yet" description="Create one project for work that needs steady attention this month." action={<Button onClick={() => setModalOpen(true)}>Create project</Button>} /> : <div className="space-y-3">{projects.map((project) => <ProjectCard key={project._id} project={project} onEdit={() => { setEditing(project); setModalOpen(true); }} onDelete={() => remove(project)} onPreview={() => setPreviewProject(project)} />)}</div>}
       <Modal open={modalOpen} title={editing ? "Edit project" : "New project"} onClose={() => setModalOpen(false)}>
         <ProjectForm project={editing} onSubmit={save} onCancel={() => setModalOpen(false)} />
       </Modal>
+      <PreviewModal
+        open={!!previewProject}
+        title={previewProject?.title ?? ""}
+        eyebrow="Project preview"
+        body={previewProject?.description ?? ""}
+        meta={previewProject && (
+          <>
+            <span className="rounded-full border border-[var(--border)] px-2 py-1">Status: {previewProject.status}</span>
+            <span className="rounded-full border border-[var(--border)] px-2 py-1">Progress: {previewProject.progress}%</span>
+            {previewProject.linkedTaskCount > 0 && <span className="rounded-full border border-[var(--border)] px-2 py-1">{previewProject.linkedTaskCount} linked {previewProject.linkedTaskCount === 1 ? "task" : "tasks"}</span>}
+          </>
+        )}
+        onClose={() => setPreviewProject(null)}
+      />
     </div>
   );
 }
