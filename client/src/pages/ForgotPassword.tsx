@@ -5,6 +5,7 @@ import { authService } from "../services/auth.service";
 import { getErrorMessage } from "../services/api";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { PasswordInput } from "../components/ui/PasswordInput";
 import { AuthShell } from "./auth/AuthShell";
 
 export default function ForgotPassword() {
@@ -18,7 +19,7 @@ export default function ForgotPassword() {
     try {
       const data = await authService.forgotPassword(email);
       setDevToken(data.devResetToken || "");
-      toast.success("Reset token created");
+      toast.success("If that email exists, a reset code is on its way");
     } catch (error) {
       toast.error(getErrorMessage(error));
     }
@@ -35,15 +36,15 @@ export default function ForgotPassword() {
   }
 
   return (
-    <AuthShell title="Reset password" description="Development mode shows the token on screen. In production, connect an email service.">
+    <AuthShell title="Reset password" description="Enter your email and we'll send you a reset code. Paste it below along with your new password.">
       <form onSubmit={requestReset} className="space-y-3">
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email" required />
-        <Button className="w-full">Create reset token</Button>
+        <Button className="w-full">Email me a reset code</Button>
       </form>
       {devToken && <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-xs break-all text-[var(--muted)]">Dev token: {devToken}</div>}
       <form onSubmit={reset} className="mt-6 space-y-3">
-        <Input value={token} onChange={(e) => setToken(e.target.value)} placeholder="Paste reset token" />
-        <Input type="password" minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password" />
+        <Input value={token} onChange={(e) => setToken(e.target.value)} placeholder="Paste reset code" />
+        <PasswordInput minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password" />
         <Button variant="secondary" className="w-full">Reset password</Button>
       </form>
       <p className="mt-5 text-center text-sm text-[var(--muted)]"><Link to="/login" className="text-[var(--text)] hover:underline">Back to login</Link></p>

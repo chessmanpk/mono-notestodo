@@ -8,6 +8,7 @@ import MonthlyReport from "../models/MonthlyReport.js";
 import ArchivedMonth from "../models/ArchivedMonth.js";
 import { createResetToken, hashResetToken, signAuthToken } from "../utils/tokens.js";
 import { endsWithEmoji } from "../utils/emoji.js";
+import { sendPasswordResetEmail } from "../services/email.service.js";
 
 function cookieOptions(rememberMe = false) {
   return {
@@ -141,8 +142,16 @@ export async function forgotPassword(req: Request, res: Response) {
   user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
   await user.save();
 
+  try {
+    await sendPasswordResetEmail(user.email, rawToken);
+  } catch (error) {
+    // Don't fail the request just because the email didn't go out — the
+    // token is already saved, and in dev mode it's still returned below.
+    console.error("Failed to send password reset email:", error);
+  }
+
   res.json({
-    message: "Password reset token created. In production, email this token as a reset link.",
+    message: "If this email exists, a reset code has been sent to it.",
     devResetToken: process.env.NODE_ENV === "production" ? undefined : rawToken,
   });
 }
