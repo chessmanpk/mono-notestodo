@@ -5,7 +5,7 @@ import { Resend } from "resend";
 // verify your own sending domain. Once you verify a domain in the Resend
 // dashboard, set RESEND_FROM_EMAIL to an address on that domain (e.g.
 // "Mono <noreply@yourdomain.com>") to send to any registered user.
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Mono <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "Mono - NotesToDo <noreply@mono-notestodo.tech>";
 
 let client: Resend | null = null;
 
