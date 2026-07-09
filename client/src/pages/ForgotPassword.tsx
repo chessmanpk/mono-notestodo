@@ -43,7 +43,7 @@ export default function ForgotPassword() {
       </form>
       {devToken && <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-xs break-all text-[var(--muted)]">Dev token: {devToken}</div>}
       <form onSubmit={reset} className="mt-6 space-y-3">
-        <Input value={token} onChange={(e) => setToken(e.target.value)} placeholder="Paste reset code" />
+        <Input value={token} onChange={(e) => setToken(e.target.value)} placeholder="Paste reset token" />
         <PasswordInput minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password" />
         <Button variant="secondary" className="w-full">Reset password</Button>
       </form>
