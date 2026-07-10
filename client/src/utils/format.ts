@@ -1,10 +1,14 @@
-import { format, isToday, isPast, parseISO } from "date-fns";
+import { format, isToday, isPast, parseISO, formatDistanceToNowStrict } from "date-fns";
 
 export function niceDate(date?: string | null) {
   if (!date) return "No date";
   const parsed = parseISO(date);
   if (isToday(parsed)) return "Today";
   return format(parsed, "MMM d, yyyy");
+}
+
+export function timeAgo(date: string) {
+  return formatDistanceToNowStrict(parseISO(date), { addSuffix: true });
 }
 
 export function isOverdue(date?: string | null) {

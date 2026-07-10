@@ -5,6 +5,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
+import announcementRoutes from "./routes/announcement.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import noteRoutes from "./routes/note.routes.js";
@@ -33,6 +34,7 @@ app.use(morgan("dev"));
 app.get("/health", (_req, res) => res.json({ ok: true, app: "Mono - NotesToDo API" }));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/announcements", announcementRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes", noteRoutes);

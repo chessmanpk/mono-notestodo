@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuthStore } from "../../store/auth.store";
 import { Button } from "../ui/Button";
-import { CommandPalette } from "../shared/CommandPalette";
+import { AnnouncementBell } from "./AnnouncementBell";
 import { ThemeToggle } from "../shared/ThemeToggle";
 
 function roleLabel(role?: string) {
@@ -41,7 +41,7 @@ export function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <CommandPalette />
+          <AnnouncementBell />
           <div className="hidden lg:block"><ThemeToggle /></div>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
             <LogOut className="h-4 w-4" />

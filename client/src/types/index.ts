@@ -62,6 +62,7 @@ export type Announcement = {
   message: string;
   tone: AnnouncementTone;
   active: boolean;
+  pinned: boolean;
   createdBy: string | AnnouncementAuthor;
   updatedBy: string | AnnouncementAuthor | null;
   createdAt: string;
@@ -73,6 +74,7 @@ export type CreateAnnouncementInput = {
   message: string;
   tone: AnnouncementTone;
   active?: boolean;
+  pinned?: boolean;
 };
 
 export type UpdateAnnouncementInput = Partial<CreateAnnouncementInput> & {
